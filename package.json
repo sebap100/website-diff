@@ -1,0 +1,30 @@
+{
+  "name": "website-diff",
+  "version": "0.1.0",
+  "description": "Website diff",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --exit-child src/index.ts",
+    "start": "ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "cron": "^2.1.0",
+    "diff": "^5.1.0",
+    "dotenv": "^16.0.1",
+    "jsdom": "^20.0.0",
+    "node-fetch": "^2.6.7",
+    "nodemailer": "^6.7.7",
+    "query-selector": "^2.0.0"
+  }
+}
