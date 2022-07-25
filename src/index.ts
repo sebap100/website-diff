@@ -59,13 +59,13 @@ function diffing(one: string, other: string) {
 let websiteContent: string;
 
 async function run(url: string) {
-  if (websiteContent) {
+  if (websiteContent != null) {
     const newContent = await fetchWebsitePart(url, process.env.QUERY_SELECTOR_EXPRESSION!);
     const isSame = diffing(websiteContent, newContent);
-    console.log(`Is same ? ${isSame}  --  ${new Date().toLocaleString()}`);
+    console.log(`Is same ? ${isSame}  --  ${new Date().toLocaleString('fr-BE', {timeZone: 'Europe/Brussels'})}`);
 
     if (!isSame) {
-      sendMail();
+      await sendMail();
     }
 
     websiteContent = newContent;
@@ -74,29 +74,35 @@ async function run(url: string) {
   }
 }
 
-async function sendMail() {
-  var nodemailer = require('nodemailer');
-  const transport = nodemailer.createTransport({
-    service: "Hotmail",
-    auth: {
-      user: process.env.SENDER_EMAIL,
-      pass: process.env.SENDER_PASSWORD,
-    }
-  });
+var nodemailer = require('nodemailer');
 
-  var mailOptions = {
-    from: process.env.SENDER_EMAIL, // sender address
-    to: process.env.RECIPIENT_EMAIL, // my mail
-    subject: `Tickets has arrived !`, // Subject line
-    text: 'Check: ' + webUrl, // plain text body
-  };
+function sendMail() {
+  return new Promise((resolve, reject) => {
+    const transport = nodemailer.createTransport({
+      service: "Hotmail",
+      auth: {
+        user: process.env.SENDER_EMAIL,
+        pass: process.env.SENDER_PASSWORD,
+      }
+    });
 
-  transport.sendMail(mailOptions, (error: any, info: any) => {
-    if (error) {
-      return console.log('Error while sending mail: ' + error);
-    } else {
-      console.log('Message sent: %s', info.messageId);
-    }
-    transport.close(); // shut down the connection pool, no more messages.
+    var mailOptions = {
+      from: process.env.SENDER_EMAIL, // sender address
+      to: process.env.RECIPIENT_EMAIL, // my mail
+      subject: `Tickets has arrived !`, // Subject line
+      text: 'Check: ' + webUrl, // plain text body
+    };
+
+    transport.sendMail(mailOptions, (error: any, info: any) => {
+      transport.close(); // shut down the connection pool, no more messages.
+
+      if (error) {
+        console.log('Error while sending mail: ' + error);
+        reject(error);
+      } else {
+        console.log('Message sent: %s', info.messageId);
+        resolve(`Message sent: ${info.messageId}`);
+      }
+    });
   });
 }
